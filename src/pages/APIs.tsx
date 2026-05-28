@@ -60,6 +60,8 @@ const statusToChip = (status: ApiProduct["status"]) => {
 
 type FilterChip = "All" | "Featured" | "Popular" | "Recently updated" | "Recommended";
 
+type CategoryFilter = "All" | ApiProduct["category"];
+
 function ApiProductCard({ api }: { api: ApiProduct }) {
   const navigate = useNavigate();
   const Icon = iconForKey(api.iconKey);
@@ -115,6 +117,15 @@ function ApiProductCard({ api }: { api: ApiProduct }) {
 export default function APIs() {
   const [search, setSearch] = useState("");
   const [chip, setChip] = useState<FilterChip>("All");
+  const [category, setCategory] = useState<CategoryFilter>("All");
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const a of apiCatalogue) {
+      counts.set(a.category, (counts.get(a.category) || 0) + 1);
+    }
+    return counts;
+  }, []);
 
   const filtered = useMemo(() => {
     return apiCatalogue.filter((a) => {
@@ -122,6 +133,7 @@ export default function APIs() {
       if (chip === "Popular" && !a.popular) return false;
       if (chip === "Recently updated" && !a.recentlyUpdated) return false;
       if (chip === "Recommended" && !a.recommended) return false;
+      if (category !== "All" && a.category !== category) return false;
       if (search) {
         const q = search.toLowerCase();
         if (
@@ -133,7 +145,7 @@ export default function APIs() {
       }
       return true;
     });
-  }, [search, chip]);
+  }, [search, chip, category]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, ApiProduct[]>();
@@ -188,6 +200,55 @@ export default function APIs() {
                 {c}
               </button>
             ))}
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60 mb-1.5">
+              Browse by category
+            </p>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setCategory("All")}
+                className={clsx(
+                  "inline-flex items-center gap-1.5 h-7 pl-2.5 pr-2 rounded-full text-[11px] font-semibold border transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30",
+                  category === "All"
+                    ? "bg-econet-red text-white border-econet-red"
+                    : "bg-white dark:bg-econet-dark-surface text-econet-ink dark:text-white border-econet-border dark:border-econet-dark-border hover:border-econet-grey"
+                )}
+              >
+                All
+                <span className="rounded bg-white/15 dark:bg-black/20 px-1 text-[10px] font-bold">
+                  {apiCatalogue.length}
+                </span>
+              </button>
+              {apiCategories.map((cat) => {
+                const count = categoryCounts.get(cat) || 0;
+                const active = category === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategory(cat)}
+                    className={clsx(
+                      "inline-flex items-center gap-1.5 h-7 pl-2.5 pr-2 rounded-full text-[11px] font-semibold border transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30",
+                      active
+                        ? "bg-econet-navy text-white border-econet-navy"
+                        : "bg-white dark:bg-econet-dark-surface text-econet-ink dark:text-white border-econet-border dark:border-econet-dark-border hover:border-econet-grey"
+                    )}
+                  >
+                    {cat}
+                    <span
+                      className={clsx(
+                        "rounded px-1 text-[10px] font-bold",
+                        active ? "bg-white/15" : "bg-econet-surface dark:bg-econet-dark-border"
+                      )}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </header>
