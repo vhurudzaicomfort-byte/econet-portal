@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -21,6 +22,10 @@ const config: Config = {
           info: "#0083BF",
           orange: "#F2682A",
           purple: "#812755",
+          "dark-bg": "#0B1233",
+          "dark-surface": "#11183D",
+          "dark-border": "#1F285A",
+          "dark-text": "#F4F6F8",
         },
       },
       fontFamily: {
@@ -56,12 +61,20 @@ const config: Config = {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "-400px 0" },
+          "100%": { backgroundPosition: "400px 0" },
+        },
       },
       animation: {
         "fade-in": "fade-in 200ms ease-out",
         "slide-up": "slide-up 200ms ease-out",
         "slide-in-right": "slide-in-right 220ms ease-out",
         spin: "spin 0.8s linear infinite",
+        shimmer: "shimmer 1.4s ease infinite linear",
+      },
+      maxWidth: {
+        prose: "72ch",
       },
     },
   },

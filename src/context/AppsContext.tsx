@@ -144,7 +144,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
           ? {
               ...a,
               clientSecret: genSecret(
-                a.environment === "Production" ? "sk_live" : "sk_sand"
+                a.environment === "Production" ? "ecsec_live" : "ecsec_sand"
               ),
               updatedAt: new Date().toISOString(),
             }

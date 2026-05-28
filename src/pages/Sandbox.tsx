@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import AppShellSearchBridge from "../components/AppShellSearchBridge";
 import Card from "../components/Card";
 import Select from "../components/Select";
@@ -6,9 +7,12 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import Badge from "../components/Badge";
 import StatusChip from "../components/StatusChip";
+import Tabs from "../components/Tabs";
+import Breadcrumb from "../components/Breadcrumb";
 import IconArrowRight from "../icons/IconArrowRight";
 import { products } from "../data/products";
 import { useApps } from "../context/AppsContext";
+import { useToast } from "../context/ToastContext";
 
 type SandboxFormField = {
   name: string;
@@ -218,8 +222,19 @@ function highlightJson(value: string) {
     .replace(/:\s*(-?\d+\.?\d*)/g, ': <span style="color:#FDE68A">$1</span>');
 }
 
+type TestWallet = { id: string; msisdn: string; balance: number };
+const initialWallets: TestWallet[] = [
+  { id: "w1", msisdn: "+263774129034", balance: 250.0 },
+  { id: "w2", msisdn: "+263782219988", balance: 85.5 },
+  { id: "w3", msisdn: "+263779984421", balance: 0.0 },
+  { id: "w4", msisdn: "+263773212223", balance: 1432.4 },
+];
+
 export default function Sandbox() {
   const { apps } = useApps();
+  const { showToast } = useToast();
+  const [searchParams] = useSearchParams();
+  const productQuery = searchParams.get("product");
   const subscribedProductSlugs = useMemo(() => {
     const all = new Set<string>();
     apps.forEach((a) => a.subscribedProductSlugs.forEach((s) => all.add(s)));
@@ -242,7 +257,11 @@ export default function Sandbox() {
   const candidateProducts =
     availableProducts.length > 0 ? availableProducts : fallbackProducts;
 
-  const [slug, setSlug] = useState<string>(candidateProducts[0]?.slug || "");
+  const initialSlug =
+    productQuery && formSchemas[productQuery]
+      ? productQuery
+      : candidateProducts[0]?.slug || "";
+  const [slug, setSlug] = useState<string>(initialSlug);
   const product = useMemo(() => products.find((p) => p.slug === slug), [slug]);
   const schema = slug ? formSchemas[slug] || [] : [];
   const [values, setValues] = useState<Record<string, string>>(() =>
@@ -264,6 +283,28 @@ export default function Sandbox() {
   };
 
   const endpoint = slug ? endpointBySlug[slug] : null;
+
+  const [wallets, setWallets] = useState<TestWallet[]>(initialWallets);
+  const [whEvent, setWhEvent] = useState<string>("payment.success");
+  const [whTarget, setWhTarget] = useState<string>("wh_4c8a");
+  const [whBody, setWhBody] = useState<string>(
+    JSON.stringify(
+      { id: "evt_8c2bb0", type: "payment.success", data: { msisdn: "+263774129034", amount: "25.00" } },
+      null,
+      2
+    )
+  );
+  const [whLog, setWhLog] = useState<
+    { id: string; event: string; status: number; latency: number; time: string }[]
+  >([]);
+
+  useEffect(() => {
+    if (productQuery && formSchemas[productQuery] && productQuery !== slug) {
+      setSlug(productQuery);
+      const fields = formSchemas[productQuery] || [];
+      setValues(Object.fromEntries(fields.map((f) => [f.name, f.initial])));
+    }
+  }, [productQuery, slug]);
 
   const onSend = () => {
     if (!product || !endpoint) return;
@@ -289,22 +330,8 @@ export default function Sandbox() {
     }, delay);
   };
 
-  return (
-    <AppShellSearchBridge>
-      <div className="flex flex-col gap-6">
-        <header>
-          <p className="text-xs font-bold uppercase tracking-wider text-econet-grey">
-            Discover
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-econet-ink">
-            Sandbox tester
-          </h1>
-          <p className="text-sm text-econet-grey mt-1 max-w-2xl">
-            Try any Econet product without writing a line of code. Pick an
-            endpoint, fill in the form, and inspect the simulated response.
-          </p>
-        </header>
-
+  const consoleTab = (
+    <div className="flex flex-col gap-5">
         <div className="grid gap-5 lg:grid-cols-2">
           <Card className="flex flex-col gap-4">
             <Select
@@ -430,6 +457,202 @@ export default function Sandbox() {
             )}
           </ul>
         </Card>
+    </div>
+  );
+
+  const webhookTab = (
+    <Card className="flex flex-col gap-4">
+      <h3 className="text-econet-ink dark:text-white">Webhook simulator</h3>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Select
+          label="Event"
+          value={whEvent}
+          onChange={(e) => setWhEvent(e.target.value)}
+          options={[
+            { value: "payment.success", label: "payment.success" },
+            { value: "payment.failed", label: "payment.failed" },
+            { value: "sms.delivered", label: "sms.delivered" },
+            { value: "ussd.session.started", label: "ussd.session.started" },
+          ]}
+        />
+        <Select
+          label="Target endpoint"
+          value={whTarget}
+          onChange={(e) => setWhTarget(e.target.value)}
+          options={[
+            { value: "wh_4c8a", label: "wh_4c8a — pindula callback" },
+            { value: "wh_88a1", label: "wh_88a1 — steward bank" },
+          ]}
+        />
+      </div>
+      <label className="flex flex-col gap-1">
+        <span className="text-sm font-semibold text-econet-ink">Payload</span>
+        <textarea
+          value={whBody}
+          onChange={(e) => setWhBody(e.target.value)}
+          rows={8}
+          spellCheck={false}
+          className="rounded-md border border-econet-border bg-white text-sm text-econet-ink font-mono p-3 focus:outline-none focus:ring-2 focus:ring-econet-navy/30"
+        />
+      </label>
+      <div>
+        <Button
+          variant="primary"
+          iconRight={<IconArrowRight size={16} />}
+          onClick={() => {
+            const ok = Math.random() > 0.2;
+            const status = ok ? 200 : 500;
+            const latency = 90 + Math.round(Math.random() * 500);
+            setWhLog((prev) =>
+              [
+                {
+                  id: `wl${prev.length + 1}`,
+                  event: whEvent,
+                  status,
+                  latency,
+                  time: new Date().toLocaleTimeString(),
+                },
+                ...prev,
+              ].slice(0, 10)
+            );
+            showToast({
+              kind: ok ? "success" : "info",
+              title: ok ? "Webhook delivered" : `Endpoint returned ${status}`,
+            });
+          }}
+        >
+          Send to my endpoint
+        </Button>
+      </div>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wider text-econet-grey mb-2">
+          Delivery log
+        </p>
+        <ul className="divide-y divide-econet-border border border-econet-border rounded-lg">
+          {whLog.length === 0 ? (
+            <li className="p-3 text-sm text-econet-grey">No deliveries yet.</li>
+          ) : (
+            whLog.map((l) => (
+              <li
+                key={l.id}
+                className="flex items-center justify-between p-3 text-sm text-econet-ink"
+              >
+                <span className="font-mono text-xs">{l.event}</span>
+                <span className="font-mono text-xs font-bold">{l.status}</span>
+                <span className="text-xs text-econet-grey">{l.latency} ms</span>
+                <span className="text-xs text-econet-grey">{l.time}</span>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+    </Card>
+  );
+
+  const walletsTab = (
+    <Card className="flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <h3 className="text-econet-ink dark:text-white">Test wallets</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setWallets(initialWallets);
+            showToast({ kind: "info", title: "Test wallets reset" });
+          }}
+        >
+          Reset all
+        </Button>
+      </div>
+      <ul className="divide-y divide-econet-border border border-econet-border rounded-lg">
+        {wallets.map((w) => (
+          <li key={w.id} className="flex items-center justify-between p-3">
+            <div>
+              <p className="text-sm font-mono text-econet-ink">{w.msisdn}</p>
+              <p className="text-xs text-econet-grey">Balance USD {w.balance.toFixed(2)}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setWallets((prev) =>
+                  prev.map((x) => (x.id === w.id ? { ...x, balance: x.balance + 50 } : x))
+                );
+                showToast({ kind: "success", title: "Topped up USD 50.00" });
+              }}
+            >
+              Top up
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+
+  const transactionsTab = (
+    <Card>
+      <h3 className="text-econet-ink dark:text-white mb-3">Transaction logs</h3>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="bg-econet-surface text-left text-xs font-semibold uppercase tracking-wide text-econet-grey">
+              <th className="px-4 py-3">Time</th>
+              <th className="px-4 py-3">Endpoint</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Latency</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-econet-border">
+            {history.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-4 py-6 text-center text-econet-grey">
+                  No transactions yet. Use the Console tab to send sample requests.
+                </td>
+              </tr>
+            ) : (
+              history.map((h) => {
+                const p = products.find((x) => x.slug === h.slug);
+                return (
+                  <tr key={h.id} className="text-econet-ink">
+                    <td className="px-4 py-3 text-xs text-econet-grey">
+                      {new Date(h.timestamp).toLocaleTimeString()}
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs">{p?.name}</td>
+                    <td className="px-4 py-3">
+                      <StatusChip status="approved" label={`${h.status}`} />
+                    </td>
+                    <td className="px-4 py-3">{h.durationMs} ms</td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+
+  return (
+    <AppShellSearchBridge>
+      <div className="flex flex-col gap-6">
+        <Breadcrumb items={[{ label: "Dashboard", to: "/dashboard" }, { label: "Sandbox" }]} />
+        <header>
+          <p className="text-xs font-bold uppercase tracking-wider text-econet-grey">
+            Discover
+          </p>
+          <h1 className="text-econet-ink">Sandbox</h1>
+          <p className="text-sm text-econet-grey mt-1 max-w-2xl">
+            Try any Econet product, simulate webhook deliveries and inspect mock wallets.
+          </p>
+        </header>
+        <Tabs
+          items={[
+            { id: "console", label: "Console", content: consoleTab },
+            { id: "webhooks", label: "Webhook simulator", content: webhookTab },
+            { id: "wallets", label: "Test wallets", content: walletsTab },
+            { id: "transactions", label: "Transaction logs", content: transactionsTab },
+          ]}
+        />
       </div>
     </AppShellSearchBridge>
   );

@@ -10,6 +10,10 @@
     @apply font-sans text-econet-ink antialiased;
     background-color: #F4F6F8;
   }
+  html.dark body {
+    @apply text-white;
+    background-color: #0B1233;
+  }
   *:focus {
     outline: none;
   }
@@ -18,9 +22,21 @@
     outline-offset: 2px;
     border-radius: 4px;
   }
+  html.dark *:focus-visible {
+    outline-color: #6B8AFF;
+  }
   ::selection {
     background-color: #001E96;
     color: #FFFFFF;
+  }
+  h1 {
+    @apply text-3xl lg:text-4xl font-bold tracking-tight;
+  }
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  h3 {
+    @apply text-xl font-semibold;
   }
 }
 
@@ -47,5 +63,41 @@
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: #677A81;
     border-radius: 4px;
+  }
+  .prose-econet {
+    max-width: 72ch;
+  }
+  .prose-econet p {
+    @apply text-base leading-7 text-econet-ink mb-4;
+  }
+  html.dark .prose-econet p {
+    @apply text-white/90;
+  }
+  .prose-econet h2 {
+    @apply text-2xl font-semibold text-econet-ink mt-10 mb-3;
+  }
+  html.dark .prose-econet h2 {
+    @apply text-white;
+  }
+  .prose-econet h3 {
+    @apply text-xl font-semibold text-econet-ink mt-8 mb-2;
+  }
+  html.dark .prose-econet h3 {
+    @apply text-white;
+  }
+  .prose-econet ul {
+    @apply list-disc pl-6 mb-4 text-econet-ink leading-7;
+  }
+  html.dark .prose-econet ul {
+    @apply text-white/90;
+  }
+  .prose-econet code {
+    @apply font-mono text-xs bg-econet-surface text-econet-navy px-1.5 py-0.5 rounded;
+  }
+  html.dark .prose-econet code {
+    @apply bg-econet-dark-surface text-white border border-econet-dark-border;
+  }
+  .prose-econet a {
+    @apply text-econet-navy font-semibold underline underline-offset-2 hover:text-econet-red;
   }
 }
