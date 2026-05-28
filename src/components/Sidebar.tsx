@@ -53,6 +53,7 @@ const groups: NavGroup[] = [
       { to: "/apis", label: "APIs", icon: <IconProducts size={20} /> },
       { to: "/products", label: "Products", icon: <IconResource size={20} /> },
       { to: "/docs", label: "Documentation", icon: <IconBook size={20} /> },
+      { to: "/sdks", label: "SDK Downloads", icon: <IconResource size={20} /> },
       { to: "/sandbox", label: "Sandbox", icon: <IconCloud size={20} /> },
       { to: "/api-explorer", label: "API Explorer", icon: <IconDocument size={20} /> },
     ],

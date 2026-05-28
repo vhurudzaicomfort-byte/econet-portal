@@ -6,9 +6,6 @@ import Tabs from "../components/Tabs";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import IconArrowRight from "../icons/IconArrowRight";
-import IconShield from "../icons/IconShield";
-import IconClock from "../icons/IconClock";
-import IconCheck from "../icons/IconCheck";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
@@ -235,41 +232,6 @@ export default function Landing() {
             </Button>
           </div>
 
-          <ul className="grid sm:grid-cols-3 gap-4 mt-6">
-            <li className="flex items-start gap-3 p-4 rounded-lg border border-econet-border bg-white">
-              <span className="text-econet-navy mt-0.5">
-                <IconShield size={20} />
-              </span>
-              <div>
-                <p className="text-sm font-bold text-econet-ink">Bank-grade</p>
-                <p className="text-xs text-econet-grey leading-5">
-                  Signed webhooks, mTLS, role-based access.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3 p-4 rounded-lg border border-econet-border bg-white">
-              <span className="text-econet-navy mt-0.5">
-                <IconClock size={20} />
-              </span>
-              <div>
-                <p className="text-sm font-bold text-econet-ink">Minutes to start</p>
-                <p className="text-xs text-econet-grey leading-5">
-                  Self-service sandbox keys with no upfront contract.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3 p-4 rounded-lg border border-econet-border bg-white">
-              <span className="text-econet-navy mt-0.5">
-                <IconCheck size={20} />
-              </span>
-              <div>
-                <p className="text-sm font-bold text-econet-ink">Approvals tracked</p>
-                <p className="text-xs text-econet-grey leading-5">
-                  Promotion to production with a clear audit trail.
-                </p>
-              </div>
-            </li>
-          </ul>
         </div>
 
         <div id="auth-card" className="relative">
