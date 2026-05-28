@@ -146,63 +146,73 @@ function RegisterForm({ onAuthed }: { onAuthed: () => void }) {
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { showToast } = useToast();
   const onAuthed = () => navigate("/dashboard");
 
   return (
-    <div className="min-h-screen relative bg-white overflow-hidden">
+    <div className="min-h-screen relative bg-white dark:bg-econet-dark-bg overflow-hidden text-econet-ink dark:text-white transition-colors">
       <StarBurstBackground
         className="pointer-events-none absolute inset-0 h-full w-full"
         opacity={0.08}
       />
-      <header className="relative z-10 flex items-center justify-between px-6 lg:px-10 h-20">
-        <EconetLogo size={180} />
-        <nav className="hidden md:flex items-center gap-2">
+      <header className="relative z-10 flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-10 py-4 lg:py-5 border-b border-transparent">
+        <div className="flex items-center gap-3 min-w-0">
+          <EconetLogo size={150} />
+          <span
+            aria-hidden="true"
+            className="hidden md:inline-block h-8 w-px bg-econet-border dark:bg-econet-dark-border"
+          />
+          <h1 className="hidden md:flex flex-col leading-tight min-w-0">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
+              Developer Platform
+            </span>
+            <span className="text-base lg:text-lg font-extrabold text-econet-navy dark:text-white truncate">
+              Onboarding Automation Portal
+            </span>
+          </h1>
+        </div>
+        <nav className="hidden md:flex items-center gap-1 shrink-0">
           <button
             type="button"
             onClick={() => navigate("/products")}
-            className="text-sm font-semibold text-econet-ink px-3 h-10 rounded-md hover:bg-econet-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
+            className="text-sm font-semibold text-econet-ink dark:text-white px-3 h-10 rounded-md hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30 transition-colors"
           >
             Browse products
           </button>
           <button
             type="button"
-            onClick={() =>
-              showToast({
-                kind: "info",
-                title: "Documentation portal",
-                body: "Full docs land at docs.econet.co.zw post-launch.",
-              })
-            }
-            className="text-sm font-semibold text-econet-ink px-3 h-10 rounded-md hover:bg-econet-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
+            onClick={() => navigate("/docs")}
+            className="text-sm font-semibold text-econet-ink dark:text-white px-3 h-10 rounded-md hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30 transition-colors"
           >
             Documentation
           </button>
           <button
             type="button"
-            onClick={() =>
-              showToast({
-                kind: "info",
-                title: "Support",
-                body: "Reach the developer support desk on developers@econet.co.zw.",
-              })
-            }
-            className="text-sm font-semibold text-econet-ink px-3 h-10 rounded-md hover:bg-econet-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
+            onClick={() => navigate("/support")}
+            className="text-sm font-semibold text-econet-ink dark:text-white px-3 h-10 rounded-md hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30 transition-colors"
           >
             Support
           </button>
         </nav>
       </header>
 
-      <section className="relative z-10 grid gap-10 lg:grid-cols-2 px-6 lg:px-10 pt-6 pb-16 lg:pb-24 max-w-screen-2xl mx-auto items-start">
+      <div className="md:hidden relative z-10 px-4 pb-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
+          Developer Platform
+        </p>
+        <p className="text-base font-extrabold text-econet-navy dark:text-white">
+          Onboarding Automation Portal
+        </p>
+      </div>
+
+      <section className="relative z-10 grid gap-10 lg:grid-cols-2 px-4 sm:px-6 lg:px-10 pt-6 pb-16 lg:pb-24 max-w-screen-2xl mx-auto items-start">
         <div className="flex flex-col gap-6 max-w-xl">
           <p className="text-sm font-semibold tracking-wide text-econet-red uppercase">
             Inspired to change your world
           </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-econet-navy leading-tight tracking-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-econet-navy dark:text-white leading-tight tracking-tight">
             Build on Econet.
-          </h1>
-          <p className="text-base sm:text-lg leading-7 text-econet-ink">
+          </h2>
+          <p className="text-base sm:text-lg leading-7 text-econet-ink dark:text-white/85">
             Integrate USSD, SMS, EcoCash, Auth and Airtime through a single
             developer portal. Get sandbox access in minutes, ship to millions of
             Zimbabwean subscribers when you are ready.
@@ -235,7 +245,7 @@ export default function Landing() {
         </div>
 
         <div id="auth-card" className="relative">
-          <div className="relative bg-white border border-econet-border rounded-xl shadow-lift p-6 sm:p-8">
+          <div className="relative bg-white dark:bg-econet-dark-surface border border-econet-border dark:border-econet-dark-border rounded-xl shadow-lift p-6 sm:p-8">
             <Tabs
               variant="pill"
               items={[
@@ -255,48 +265,30 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-econet-border bg-white">
-        <div className="max-w-screen-2xl mx-auto px-6 lg:px-10 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-econet-grey">
+      <footer className="relative z-10 border-t border-econet-border dark:border-econet-dark-border bg-white dark:bg-econet-dark-bg">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-econet-grey dark:text-white/60">
           <p>
             Econet Wireless Zimbabwe. Sandbox preview for partner onboarding.
           </p>
           <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() =>
-                showToast({
-                  kind: "info",
-                  title: "Privacy",
-                  body: "Privacy policy is available on request from compliance@econet.co.zw.",
-                })
-              }
-              className="px-2 h-8 rounded font-semibold text-econet-ink hover:bg-econet-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
+              onClick={() => navigate("/privacy")}
+              className="px-2 h-8 rounded font-semibold text-econet-ink dark:text-white hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30 transition-colors"
             >
               Privacy
             </button>
             <button
               type="button"
-              onClick={() =>
-                showToast({
-                  kind: "info",
-                  title: "Terms",
-                  body: "Sandbox terms apply during the partner onboarding period.",
-                })
-              }
-              className="px-2 h-8 rounded font-semibold text-econet-ink hover:bg-econet-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
+              onClick={() => navigate("/terms")}
+              className="px-2 h-8 rounded font-semibold text-econet-ink dark:text-white hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30 transition-colors"
             >
               Terms
             </button>
             <button
               type="button"
-              onClick={() =>
-                showToast({
-                  kind: "info",
-                  title: "Support",
-                  body: "developers@econet.co.zw responds within one business day.",
-                })
-              }
-              className="px-2 h-8 rounded font-semibold text-econet-ink hover:bg-econet-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
+              onClick={() => navigate("/support")}
+              className="px-2 h-8 rounded font-semibold text-econet-ink dark:text-white hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30 transition-colors"
             >
               Support
             </button>

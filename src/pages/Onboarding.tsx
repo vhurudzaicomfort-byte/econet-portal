@@ -33,7 +33,8 @@ const stepMeta: Record<
     label: "Verify email",
     description: "Confirm your address.",
     tasks: ["Click the verification link sent to your inbox"],
-    ctaLabel: "Continue",
+    ctaLabel: "Resend verification",
+    ctaTo: "/profile",
   },
   organization: {
     label: "Create organization",

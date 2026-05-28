@@ -191,15 +191,18 @@ export default function Topbar({
           <div className="hidden sm:block">{primaryAction}</div>
         ) : null}
 
+        <div className="hidden xl:flex flex-col leading-tight text-right min-w-0 max-w-[260px] ml-auto pr-1">
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
+            Econet Developer Platform
+          </span>
+          <span className="text-base font-extrabold text-econet-navy dark:text-white truncate">
+            Onboarding Automation Portal
+          </span>
+        </div>
+
         <button
           type="button"
-          onClick={() =>
-            showToast({
-              kind: "info",
-              title: "Help",
-              body: "Visit Support to open a ticket or the FAQs for self-service.",
-            })
-          }
+          onClick={() => navigate("/support")}
           aria-label="Help"
           className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-md text-econet-ink dark:text-white hover:bg-econet-surface dark:hover:bg-econet-dark-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/30"
         >

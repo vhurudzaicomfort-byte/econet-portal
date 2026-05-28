@@ -8,6 +8,7 @@ import { EnvProvider } from "./context/EnvContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { OnboardingProvider } from "./context/OnboardingContext";
 import AppShell from "./components/AppShell";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -78,15 +79,16 @@ function RouteFallback() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter>
-        <ToastProvider>
-          <AuthProvider>
-            <EnvProvider>
-              <OnboardingProvider>
-                <AppsProvider>
-                  <Suspense fallback={<RouteFallback />}>
-                    <Routes>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <BrowserRouter>
+          <ToastProvider>
+            <AuthProvider>
+              <EnvProvider>
+                <OnboardingProvider>
+                  <AppsProvider>
+                    <Suspense fallback={<RouteFallback />}>
+                      <Routes>
                       <Route path="/" element={<Landing />} />
                       <Route
                         element={
@@ -154,9 +156,10 @@ export default function App() {
                 </AppsProvider>
               </OnboardingProvider>
             </EnvProvider>
-          </AuthProvider>
-        </ToastProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+            </AuthProvider>
+          </ToastProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
