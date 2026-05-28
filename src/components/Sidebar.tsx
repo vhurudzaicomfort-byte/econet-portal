@@ -42,8 +42,8 @@ const groups: NavGroup[] = [
     id: "overview",
     heading: "Overview",
     items: [
-      { to: "/dashboard", label: "Dashboard", icon: <IconApps size={20} /> },
       { to: "/onboarding", label: "Onboarding", icon: <IconActivity size={20} /> },
+      { to: "/dashboard", label: "Dashboard", icon: <IconApps size={20} /> },
     ],
   },
   {
