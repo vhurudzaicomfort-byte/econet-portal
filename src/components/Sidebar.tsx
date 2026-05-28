@@ -148,12 +148,7 @@ export default function Sidebar({ onNavigate, className }: SidebarProps) {
       aria-label="Primary"
     >
       <div className="flex items-start gap-2 px-5 pt-4 pb-3 border-b border-econet-border dark:border-econet-dark-border">
-        <div className="flex flex-col">
-          <EconetLogo size={130} />
-          <p className="text-xs text-econet-grey dark:text-white/60 mt-0.5">
-            Developer Platform
-          </p>
-        </div>
+        <EconetLogo size={130} />
       </div>
       <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin">
         {groups

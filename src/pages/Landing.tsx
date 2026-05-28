@@ -161,13 +161,8 @@ export default function Landing() {
             aria-hidden="true"
             className="hidden md:inline-block h-8 w-px bg-econet-border dark:bg-econet-dark-border"
           />
-          <h1 className="hidden md:flex flex-col leading-tight min-w-0">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
-              Developer Platform
-            </span>
-            <span className="text-base lg:text-lg font-extrabold text-econet-navy dark:text-white truncate">
-              Onboarding Automation Portal
-            </span>
+          <h1 className="hidden md:block text-base lg:text-lg font-extrabold text-econet-navy dark:text-white truncate leading-tight min-w-0">
+            Onboarding Automation Portal
           </h1>
         </div>
         <nav className="hidden md:flex items-center gap-1 shrink-0">
@@ -196,9 +191,6 @@ export default function Landing() {
       </header>
 
       <div className="md:hidden relative z-10 px-4 pb-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
-          Developer Platform
-        </p>
         <p className="text-base font-extrabold text-econet-navy dark:text-white">
           Onboarding Automation Portal
         </p>

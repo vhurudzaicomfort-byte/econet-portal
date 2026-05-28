@@ -191,10 +191,7 @@ export default function Topbar({
           <div className="hidden sm:block">{primaryAction}</div>
         ) : null}
 
-        <div className="hidden xl:flex flex-col leading-tight text-right min-w-0 max-w-[260px] ml-auto pr-1">
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
-            Econet Developer Platform
-          </span>
+        <div className="hidden xl:block text-right min-w-0 max-w-[260px] ml-auto pr-1">
           <span className="text-base font-extrabold text-econet-navy dark:text-white truncate">
             Onboarding Automation Portal
           </span>
