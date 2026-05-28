@@ -11,13 +11,6 @@ import IconClock from "../icons/IconClock";
 import IconCheck from "../icons/IconCheck";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
-import {
-  CassavaLogo,
-  FbcLogo,
-  PindulaLogo,
-  StewardBankLogo,
-  ZimnatLogo,
-} from "../components/brand";
 
 function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -166,7 +159,7 @@ export default function Landing() {
         opacity={0.08}
       />
       <header className="relative z-10 flex items-center justify-between px-6 lg:px-10 h-20">
-        <EconetLogo size={140} withWordmarkSuffix />
+        <EconetLogo size={180} />
         <nav className="hidden md:flex items-center gap-2">
           <button
             type="button"
@@ -296,21 +289,6 @@ export default function Landing() {
                 },
               ]}
             />
-          </div>
-        </div>
-      </section>
-
-      <section className="relative z-10 border-t border-econet-border bg-white py-10">
-        <div className="max-w-screen-2xl mx-auto px-6 lg:px-10">
-          <p className="text-xs font-bold uppercase tracking-wider text-econet-grey mb-4 text-center">
-            Trusted by builders across Zimbabwe
-          </p>
-          <div className="flex items-center justify-center flex-wrap gap-x-10 gap-y-5">
-            <PindulaLogo size={110} className="opacity-80" />
-            <StewardBankLogo size={150} className="opacity-80" />
-            <FbcLogo size={130} className="opacity-80" />
-            <CassavaLogo size={120} className="opacity-80" />
-            <ZimnatLogo size={110} className="opacity-80" />
           </div>
         </div>
       </section>

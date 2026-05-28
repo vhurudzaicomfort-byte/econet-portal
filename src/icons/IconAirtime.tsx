@@ -3,7 +3,7 @@ import type { IconProps } from "./index";
 export default function IconAirtime({
   size = 24,
   className,
-  strokeWidth = 1.5,
+  strokeWidth = 1.75,
   ...rest
 }: IconProps) {
   return (

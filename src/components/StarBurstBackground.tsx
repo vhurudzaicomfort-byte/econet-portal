@@ -1,12 +1,12 @@
-type StarBurstBackgroundProps = {
+type SignalPulseBackgroundProps = {
   className?: string;
   opacity?: number;
 };
 
-export default function StarBurstBackground({
+export default function SignalPulseBackground({
   className,
-  opacity = 0.08,
-}: StarBurstBackgroundProps) {
+  opacity = 0.07,
+}: SignalPulseBackgroundProps) {
   return (
     <svg
       viewBox="0 0 800 600"
@@ -15,37 +15,26 @@ export default function StarBurstBackground({
       className={className}
       style={{ opacity }}
     >
-      <defs>
-        <radialGradient id="globeFade" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#001E96" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#001E96" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx="640" cy="120" r="180" fill="url(#globeFade)" />
-      <g stroke="#001E96" fill="none" strokeWidth="1">
-        <circle cx="640" cy="120" r="120" />
-        <circle cx="640" cy="120" r="90" />
-        <circle cx="640" cy="120" r="60" />
-        <ellipse cx="640" cy="120" rx="120" ry="40" />
-        <ellipse cx="640" cy="120" rx="120" ry="80" />
-        <line x1="520" y1="120" x2="760" y2="120" />
-        <line x1="640" y1="0" x2="640" y2="240" />
+      <g stroke="#001B8D" fill="none" strokeWidth="1">
+        <circle cx="640" cy="140" r="220" />
+        <circle cx="640" cy="140" r="160" />
+        <circle cx="640" cy="140" r="100" />
+        <circle cx="640" cy="140" r="48" />
       </g>
-      <g stroke="#E2231A" strokeWidth="1.5" strokeLinecap="round">
-        <line x1="640" y1="40" x2="640" y2="60" />
-        <line x1="640" y1="180" x2="640" y2="200" />
-        <line x1="560" y1="120" x2="580" y2="120" />
-        <line x1="700" y1="120" x2="720" y2="120" />
-        <line x1="585" y1="65" x2="600" y2="80" />
-        <line x1="680" y1="160" x2="695" y2="175" />
-        <line x1="680" y1="80" x2="695" y2="65" />
-        <line x1="585" y1="175" x2="600" y2="160" />
+      <g stroke="#001B8D" strokeWidth="1" strokeLinecap="round" opacity="0.6">
+        <line x1="520" y1="140" x2="540" y2="140" />
+        <line x1="740" y1="140" x2="760" y2="140" />
+        <line x1="640" y1="20" x2="640" y2="40" />
+        <line x1="640" y1="240" x2="640" y2="260" />
       </g>
-      <g stroke="#001E96" strokeWidth="1" fill="none">
-        <circle cx="120" cy="480" r="80" />
-        <circle cx="120" cy="480" r="55" />
-        <circle cx="120" cy="480" r="30" />
+      <circle cx="640" cy="140" r="4" fill="#E2231A" />
+
+      <g stroke="#001B8D" strokeWidth="1" fill="none">
+        <circle cx="140" cy="460" r="100" />
+        <circle cx="140" cy="460" r="64" />
+        <circle cx="140" cy="460" r="30" />
       </g>
+      <circle cx="140" cy="460" r="3" fill="#001B8D" />
     </svg>
   );
 }

@@ -1,59 +1,66 @@
 type EconetLogoProps = {
   size?: number;
   className?: string;
-  withWordmarkSuffix?: boolean;
+  /** Force a variant; otherwise the dark/light variant follows the theme via the `dark` class. */
+  variant?: "auto" | "color" | "white";
   title?: string;
 };
 
+const ASPECT_RATIO = 900 / 225;
+
 export default function EconetLogo({
   size = 140,
-  className,
-  withWordmarkSuffix = false,
-  title = "Econet",
+  className = "",
+  variant = "auto",
+  title = "Econet Wireless",
 }: EconetLogoProps) {
-  const aspectRatio = 70 / 200;
-  const height = Math.round(size * aspectRatio);
+  const height = Math.round(size / ASPECT_RATIO);
+  const style = { width: size, height };
+
+  if (variant === "color") {
+    return (
+      <img
+        src="/econet-logo-color.svg"
+        alt={title}
+        style={style}
+        className={className}
+        decoding="async"
+      />
+    );
+  }
+  if (variant === "white") {
+    return (
+      <img
+        src="/econet-logo-white.svg"
+        alt={title}
+        style={style}
+        className={className}
+        decoding="async"
+      />
+    );
+  }
+
   return (
-    <svg
-      width={size}
-      height={height}
-      viewBox="0 0 200 70"
-      className={className}
+    <span
+      className={`inline-block align-middle ${className}`}
+      style={style}
       role="img"
       aria-label={title}
     >
-      <title>{title}</title>
-      <text
-        x="0"
-        y="42"
-        fontFamily="Helvetica Neue, Arial, sans-serif"
-        fontWeight="900"
-        fontSize="36"
-        letterSpacing="-1"
-        fill="#001E96"
-      >
-        ECONET
-      </text>
-      <path
-        d="M88 56 C 110 68, 146 66, 168 50"
-        stroke="#E2231A"
-        strokeWidth="6"
-        strokeLinecap="round"
-        fill="none"
+      <img
+        src="/econet-logo-color.svg"
+        alt=""
+        style={style}
+        className="block dark:hidden"
+        decoding="async"
       />
-      {withWordmarkSuffix ? (
-        <text
-          x="0"
-          y="64"
-          fontFamily="Helvetica Neue, Arial, sans-serif"
-          fontWeight="400"
-          fontSize="10"
-          fill="#677A81"
-          letterSpacing="2"
-        >
-          WIRELESS ZIMBABWE
-        </text>
-      ) : null}
-    </svg>
+      <img
+        src="/econet-logo-white.svg"
+        alt=""
+        style={style}
+        className="hidden dark:block"
+        decoding="async"
+      />
+    </span>
   );
 }

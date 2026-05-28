@@ -1,42 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --econet-blue: #001B8D;
+  --econet-blue-700: #0026B8;
+  --digital-blue: #2E5BFF;
+  --econet-red: #E2231A;
+  --econet-red-600: #C41A12;
+  --ink: #0A0E1F;
+
+  --acc-cyan: #13C2D6;
+  --acc-violet: #6C4BF5;
+  --acc-teal: #00A88F;
+  --acc-amber: #FFB020;
+  --acc-magenta: #FF4D8D;
+
+  --slate-800: #1E2433;
+  --slate-600: #4A5266;
+  --slate-400: #8A93A6;
+  --slate-200: #D7DCE5;
+  --slate-100: #EDF0F5;
+  --surface: #F6F8FC;
+  --white: #FFFFFF;
+
+  --success: #1FA463;
+  --warning: #F0A020;
+  --error: #E2231A;
+  --info: #2E5BFF;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 3px rgba(10, 14, 31, 0.06);
+  --shadow-md: 0 6px 16px rgba(10, 14, 31, 0.08);
+  --shadow-lg: 0 18px 48px rgba(0, 27, 141, 0.14);
+  --ease-econet: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    font-family: "Manrope", "Helvetica Neue", Arial, system-ui, sans-serif;
   }
   body {
-    @apply font-sans text-econet-ink antialiased;
-    background-color: #F4F6F8;
+    @apply text-econet-ink antialiased;
+    font-family: "Manrope", "Helvetica Neue", Arial, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    background-color: var(--surface);
   }
   html.dark body {
-    @apply text-white;
+    color: rgba(255, 255, 255, 0.92);
     background-color: #0B1233;
   }
   *:focus {
     outline: none;
   }
   *:focus-visible {
-    outline: 2px solid #001E96;
+    outline: 3px solid var(--digital-blue);
     outline-offset: 2px;
-    border-radius: 4px;
+    box-shadow: 0 0 0 4px rgba(46, 91, 255, 0.14);
+    border-radius: 6px;
   }
   html.dark *:focus-visible {
     outline-color: #6B8AFF;
   }
   ::selection {
-    background-color: #001E96;
+    background-color: var(--econet-blue);
     color: #FFFFFF;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Sora", "Helvetica Neue", Arial, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
   h1 {
-    @apply text-3xl lg:text-4xl font-bold tracking-tight;
+    @apply text-3xl lg:text-4xl;
+    font-weight: 800;
+    line-height: 1.15;
   }
   h2 {
-    @apply text-2xl font-semibold;
+    @apply text-2xl;
+    font-weight: 700;
+    line-height: 1.2;
   }
   h3 {
-    @apply text-xl font-semibold;
+    @apply text-xl;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  p {
+    line-height: 1.6;
   }
 }
 
@@ -52,52 +109,81 @@
 }
 
 @layer utilities {
+  .font-display {
+    font-family: "Sora", "Helvetica Neue", Arial, system-ui, sans-serif;
+  }
+  .font-body {
+    font-family: "Manrope", "Helvetica Neue", Arial, system-ui, sans-serif;
+  }
+  .eyebrow {
+    @apply text-[13px] font-bold uppercase tracking-[1px] text-slate-600;
+  }
+  html.dark .eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+  }
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #677A81 transparent;
+    scrollbar-color: #8A93A6 transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #677A81;
+    background-color: #8A93A6;
     border-radius: 4px;
   }
   .prose-econet {
     max-width: 72ch;
+    font-family: "Manrope", "Helvetica Neue", Arial, system-ui, sans-serif;
   }
   .prose-econet p {
     @apply text-base leading-7 text-econet-ink mb-4;
   }
   html.dark .prose-econet p {
-    @apply text-white/90;
+    color: rgba(255, 255, 255, 0.9);
   }
   .prose-econet h2 {
-    @apply text-2xl font-semibold text-econet-ink mt-10 mb-3;
+    @apply text-2xl mt-10 mb-3;
+    font-family: "Sora", "Helvetica Neue", Arial, system-ui, sans-serif;
+    font-weight: 700;
+    color: var(--ink);
   }
   html.dark .prose-econet h2 {
-    @apply text-white;
+    color: #FFFFFF;
   }
   .prose-econet h3 {
-    @apply text-xl font-semibold text-econet-ink mt-8 mb-2;
+    @apply text-xl mt-8 mb-2;
+    font-family: "Sora", "Helvetica Neue", Arial, system-ui, sans-serif;
+    font-weight: 600;
+    color: var(--ink);
   }
   html.dark .prose-econet h3 {
-    @apply text-white;
+    color: #FFFFFF;
   }
   .prose-econet ul {
     @apply list-disc pl-6 mb-4 text-econet-ink leading-7;
   }
   html.dark .prose-econet ul {
-    @apply text-white/90;
+    color: rgba(255, 255, 255, 0.9);
   }
   .prose-econet code {
-    @apply font-mono text-xs bg-econet-surface text-econet-navy px-1.5 py-0.5 rounded;
+    @apply font-mono text-xs px-1.5 py-0.5 rounded-sm;
+    background-color: var(--slate-100);
+    color: var(--econet-blue);
   }
   html.dark .prose-econet code {
-    @apply bg-econet-dark-surface text-white border border-econet-dark-border;
+    background-color: #11183D;
+    color: #FFFFFF;
+    border: 1px solid #1F285A;
   }
   .prose-econet a {
-    @apply text-econet-navy font-semibold underline underline-offset-2 hover:text-econet-red;
+    color: var(--econet-blue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-econet a:hover {
+    color: var(--econet-red);
   }
 }

@@ -74,7 +74,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       type={type}
       disabled={isDisabled}
       className={clsx(
-        "inline-flex items-center justify-center font-semibold rounded-md transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+        "inline-flex items-center justify-center font-semibold rounded-pill transition-all duration-micro ease-econet focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:translate-y-px",
         sizeClass[size],
         variantClass[variant],
         fullWidth && "w-full",
