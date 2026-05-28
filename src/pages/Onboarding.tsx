@@ -180,13 +180,15 @@ export default function Onboarding() {
                   size="sm"
                   iconRight={<IconArrowRight size={16} />}
                   onClick={() => {
-                    markComplete(id, true);
+                    if (id !== "organization") {
+                      markComplete(id, true);
+                    }
                     if (meta.ctaTo) navigate(meta.ctaTo);
                   }}
                 >
                   {done ? "Revisit" : meta.ctaLabel}
                 </Button>
-                {!done ? (
+                {!done && id !== "organization" ? (
                   <button
                     type="button"
                     onClick={() => markComplete(id, true)}
@@ -194,7 +196,7 @@ export default function Onboarding() {
                   >
                     Skip for now
                   </button>
-                ) : (
+                ) : done ? (
                   <button
                     type="button"
                     onClick={() => markComplete(id, false)}
@@ -202,6 +204,10 @@ export default function Onboarding() {
                   >
                     Mark incomplete
                   </button>
+                ) : (
+                  <span className="ml-auto text-[10px] font-bold uppercase tracking-[0.18em] text-econet-grey dark:text-white/60">
+                    Cannot skip · gate
+                  </span>
                 )}
               </div>
             </Card>

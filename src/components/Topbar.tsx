@@ -24,6 +24,7 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { useEnv } from "../context/EnvContext";
 import { useTheme } from "../context/ThemeContext";
+import { useOnboardingGate } from "../hooks/useOnboardingGate";
 
 type TopbarProps = {
   onMenuClick: () => void;
@@ -50,6 +51,7 @@ export default function Topbar({
   const { showToast } = useToast();
   const { env, setEnv } = useEnv();
   const { theme, toggle: toggleTheme } = useTheme();
+  const { unlocked: onboardingUnlocked, primaryBlockerLabel } = useOnboardingGate();
   const [bellOpen, setBellOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
@@ -153,21 +155,44 @@ export default function Topbar({
           )}
         </div>
 
-        <div className="hidden lg:inline-flex items-center rounded-md border border-econet-border dark:border-econet-dark-border bg-white dark:bg-econet-dark-surface p-0.5">
+        <div
+          className={clsx(
+            "hidden lg:inline-flex items-center rounded-md border border-econet-border dark:border-econet-dark-border bg-white dark:bg-econet-dark-surface p-0.5",
+            !onboardingUnlocked && "opacity-50"
+          )}
+          title={
+            !onboardingUnlocked
+              ? `Complete "${primaryBlockerLabel}" to switch environments.`
+              : undefined
+          }
+        >
           {(["Sandbox", "Production"] as const).map((mode) => (
             <button
               key={mode}
               type="button"
-              onClick={() => setEnv(mode)}
+              onClick={() => {
+                if (!onboardingUnlocked) {
+                  showToast({
+                    kind: "info",
+                    title: "Environment switching is locked",
+                    body: `Complete "${primaryBlockerLabel}" to switch environments.`,
+                  });
+                  return;
+                }
+                setEnv(mode);
+              }}
+              disabled={!onboardingUnlocked}
               className={clsx(
                 "px-3 h-8 text-xs font-bold rounded-[5px] transition-colors duration-150",
                 env === mode
                   ? mode === "Production"
                     ? "bg-econet-red text-white"
                     : "bg-econet-navy text-white"
-                  : "text-econet-grey dark:text-white/60 hover:text-econet-ink dark:hover:text-white"
+                  : "text-econet-grey dark:text-white/60 hover:text-econet-ink dark:hover:text-white",
+                !onboardingUnlocked && "cursor-not-allowed"
               )}
               aria-pressed={env === mode}
+              aria-disabled={!onboardingUnlocked}
             >
               {mode}
             </button>
@@ -187,7 +212,7 @@ export default function Topbar({
           </div>
         ) : null}
 
-        {primaryAction ? (
+        {primaryAction && onboardingUnlocked ? (
           <div className="hidden sm:block">{primaryAction}</div>
         ) : null}
 

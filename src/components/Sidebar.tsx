@@ -4,7 +4,6 @@ import clsx from "clsx";
 import EconetLogo from "./EconetLogo";
 import IconApps from "../icons/IconApps";
 import IconUsers from "../icons/IconUsers";
-import IconUser from "../icons/IconUser";
 import IconProducts from "../icons/IconProducts";
 import IconAnalytics from "../icons/IconAnalytics";
 import IconBell from "../icons/IconBell";
@@ -23,11 +22,14 @@ import IconResource from "../icons/IconResource";
 import IconSettings from "../icons/IconSettings";
 import type { ReactNode } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { useOnboardingGate } from "../hooks/useOnboardingGate";
 
 type NavItem = {
   to: string;
   label: string;
   icon: ReactNode;
+  requiresUnlock?: boolean;
 };
 
 type NavGroup = {
@@ -43,7 +45,7 @@ const groups: NavGroup[] = [
     heading: "Overview",
     items: [
       { to: "/onboarding", label: "Onboarding", icon: <IconActivity size={20} /> },
-      { to: "/dashboard", label: "Dashboard", icon: <IconApps size={20} /> },
+      { to: "/dashboard", label: "Dashboard", icon: <IconApps size={20} />, requiresUnlock: true },
     ],
   },
   {
@@ -54,28 +56,28 @@ const groups: NavGroup[] = [
       { to: "/products", label: "Products", icon: <IconResource size={20} /> },
       { to: "/docs", label: "Documentation", icon: <IconBook size={20} /> },
       { to: "/sdks", label: "SDK Downloads", icon: <IconResource size={20} /> },
-      { to: "/sandbox", label: "Sandbox", icon: <IconCloud size={20} /> },
-      { to: "/api-explorer", label: "API Explorer", icon: <IconDocument size={20} /> },
+      { to: "/sandbox", label: "Sandbox", icon: <IconCloud size={20} />, requiresUnlock: true },
+      { to: "/api-explorer", label: "API Explorer", icon: <IconDocument size={20} />, requiresUnlock: true },
     ],
   },
   {
     id: "manage",
     heading: "Manage",
     items: [
-      { to: "/apps", label: "My Apps", icon: <IconApps size={20} /> },
-      { to: "/teams", label: "Teams", icon: <IconUsers size={20} /> },
-      { to: "/webhooks", label: "Webhooks", icon: <IconWebhook size={20} /> },
-      { to: "/tokens", label: "Access Tokens", icon: <IconKey size={20} /> },
-      { to: "/environments", label: "Environments", icon: <IconSettings size={20} /> },
+      { to: "/apps", label: "My Apps", icon: <IconApps size={20} />, requiresUnlock: true },
+      { to: "/teams", label: "Teams", icon: <IconUsers size={20} />, requiresUnlock: true },
+      { to: "/webhooks", label: "Webhooks", icon: <IconWebhook size={20} />, requiresUnlock: true },
+      { to: "/tokens", label: "Access Tokens", icon: <IconKey size={20} />, requiresUnlock: true },
+      { to: "/environments", label: "Environments", icon: <IconSettings size={20} />, requiresUnlock: true },
     ],
   },
   {
     id: "operate",
     heading: "Operate",
     items: [
-      { to: "/analytics", label: "Analytics", icon: <IconAnalytics size={20} /> },
-      { to: "/billing", label: "Billing", icon: <IconBilling size={20} /> },
-      { to: "/audit", label: "Audit Logs", icon: <IconDocument size={20} /> },
+      { to: "/analytics", label: "Analytics", icon: <IconAnalytics size={20} />, requiresUnlock: true },
+      { to: "/billing", label: "Billing", icon: <IconBilling size={20} />, requiresUnlock: true },
+      { to: "/audit", label: "Audit Logs", icon: <IconDocument size={20} />, requiresUnlock: true },
       { to: "/status", label: "Status", icon: <IconActivity size={20} /> },
     ],
   },
@@ -87,7 +89,7 @@ const groups: NavGroup[] = [
       { to: "/support", label: "Support", icon: <IconHelp size={20} /> },
       { to: "/faqs", label: "FAQs", icon: <IconChat size={20} /> },
       { to: "/changelog", label: "Changelog", icon: <IconActivity size={20} /> },
-      { to: "/community", label: "Community", icon: <IconUsers size={20} /> },
+      { to: "/community", label: "Community", icon: <IconUsers size={20} />, requiresUnlock: true },
     ],
   },
   {
@@ -103,8 +105,8 @@ const groups: NavGroup[] = [
     heading: "Admin",
     adminOnly: true,
     items: [
-      { to: "/admin", label: "Submissions", icon: <IconShield size={20} /> },
-      { to: "/admin/org", label: "Org Management", icon: <IconSettings size={20} /> },
+      { to: "/admin", label: "Submissions", icon: <IconShield size={20} />, requiresUnlock: true },
+      { to: "/admin/org", label: "Org Management", icon: <IconSettings size={20} />, requiresUnlock: true },
     ],
   },
 ];
@@ -116,9 +118,30 @@ type SidebarProps = {
 
 const COLLAPSE_KEY = "econet.sidebar.collapsed";
 
+function LockIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="4" y="11" width="16" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </svg>
+  );
+}
+
 export default function Sidebar({ onNavigate, className }: SidebarProps) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+  const { unlocked, primaryBlockerLabel } = useOnboardingGate();
+  const { showToast } = useToast();
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
     if (typeof window === "undefined") return {};
@@ -137,6 +160,14 @@ export default function Sidebar({ onNavigate, className }: SidebarProps) {
 
   const toggleGroup = (id: string) => {
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const notifyLocked = (label: string) => {
+    showToast({
+      kind: "info",
+      title: `${label} is locked`,
+      body: `Complete the "${primaryBlockerLabel}" step in Onboarding to unlock.`,
+    });
   };
 
   return (
@@ -175,26 +206,48 @@ export default function Sidebar({ onNavigate, className }: SidebarProps) {
                 </button>
                 {!isCollapsed ? (
                   <ul className="flex flex-col gap-0.5">
-                    {group.items.map((item) => (
-                      <li key={item.to}>
-                        <NavLink
-                          to={item.to}
-                          onClick={onNavigate}
-                          end={item.to === "/dashboard"}
-                          className={({ isActive }) =>
-                            clsx(
-                              "flex items-center gap-3 rounded-md pl-3 pr-3 h-9 text-sm font-semibold transition-colors duration-150 border-l-[3px]",
-                              isActive
-                                ? "bg-econet-navy/5 dark:bg-white/10 text-econet-navy dark:text-white border-econet-navy dark:border-white"
-                                : "text-econet-ink dark:text-white/85 border-transparent hover:bg-econet-surface dark:hover:bg-econet-dark-surface"
-                            )
-                          }
-                        >
-                          <span aria-hidden="true">{item.icon}</span>
-                          <span>{item.label}</span>
-                        </NavLink>
-                      </li>
-                    ))}
+                    {group.items.map((item) => {
+                      const locked = item.requiresUnlock === true && !unlocked;
+                      if (locked) {
+                        return (
+                          <li key={item.to}>
+                            <button
+                              type="button"
+                              onClick={() => notifyLocked(item.label)}
+                              aria-disabled="true"
+                              aria-label={`${item.label} (locked)`}
+                              className="w-full flex items-center gap-3 rounded-md pl-3 pr-3 h-9 text-sm font-semibold border-l-[3px] border-transparent text-econet-grey/50 dark:text-white/35 cursor-not-allowed hover:bg-econet-surface/50 dark:hover:bg-econet-dark-surface/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-econet-navy/20 transition-colors"
+                            >
+                              <span aria-hidden="true">{item.icon}</span>
+                              <span className="flex-1 text-left">{item.label}</span>
+                              <span className="text-econet-grey/60 dark:text-white/40" aria-hidden="true">
+                                <LockIcon />
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      }
+                      return (
+                        <li key={item.to}>
+                          <NavLink
+                            to={item.to}
+                            onClick={onNavigate}
+                            end={item.to === "/dashboard"}
+                            className={({ isActive }) =>
+                              clsx(
+                                "flex items-center gap-3 rounded-md pl-3 pr-3 h-9 text-sm font-semibold transition-colors duration-150 border-l-[3px]",
+                                isActive
+                                  ? "bg-econet-navy/5 dark:bg-white/10 text-econet-navy dark:text-white border-econet-navy dark:border-white"
+                                  : "text-econet-ink dark:text-white/85 border-transparent hover:bg-econet-surface dark:hover:bg-econet-dark-surface"
+                              )
+                            }
+                          >
+                            <span aria-hidden="true">{item.icon}</span>
+                            <span>{item.label}</span>
+                          </NavLink>
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : null}
               </div>

@@ -1,8 +1,8 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect, useRef } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { AppsProvider } from "./context/AppsContext";
-import { ToastProvider } from "./context/ToastContext";
+import { ToastProvider, useToast } from "./context/ToastContext";
 import { ShellChromeProvider } from "./components/ShellChromeContext";
 import { EnvProvider } from "./context/EnvContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -10,6 +10,7 @@ import { OnboardingProvider } from "./context/OnboardingContext";
 import AppShell from "./components/AppShell";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
+import { useOnboardingGate } from "./hooks/useOnboardingGate";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -59,6 +60,27 @@ function RequireAdmin({ children }: { children: JSX.Element }) {
   return children;
 }
 
+function RequireOnboarding({ children }: { children: JSX.Element }) {
+  const { unlocked, primaryBlockerLabel } = useOnboardingGate();
+  const { showToast } = useToast();
+  const location = useLocation();
+  const notifiedFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (unlocked) return;
+    if (notifiedFor.current === location.pathname) return;
+    notifiedFor.current = location.pathname;
+    showToast({
+      kind: "info",
+      title: "This area is locked",
+      body: `Complete the "${primaryBlockerLabel}" step to unlock.`,
+    });
+  }, [unlocked, location.pathname, primaryBlockerLabel, showToast]);
+
+  if (!unlocked) return <Navigate to="/onboarding" replace />;
+  return children;
+}
+
 function RouteFallback() {
   return (
     <div
@@ -77,6 +99,8 @@ function RouteFallback() {
   );
 }
 
+const gated = (el: JSX.Element) => <RequireOnboarding>{el}</RequireOnboarding>;
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -89,73 +113,72 @@ export default function App() {
                   <AppsProvider>
                     <Suspense fallback={<RouteFallback />}>
                       <Routes>
-                      <Route path="/" element={<Landing />} />
-                      <Route
-                        element={
-                          <RequireAuth>
-                            <ShellChromeProvider>
-                              <AppShell />
-                            </ShellChromeProvider>
-                          </RequireAuth>
-                        }
-                      >
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/onboarding" element={<Onboarding />} />
-                        <Route path="/apis" element={<APIs />} />
-                        <Route path="/apis/:slug" element={<ProductDetail />} />
-                        <Route path="/products" element={<Products />} />
-                        <Route path="/products/:slug" element={<ProductDetail />} />
-                        <Route path="/docs" element={<Documentation />} />
-                        <Route path="/docs/:slug" element={<Documentation />} />
-                        <Route path="/api-explorer" element={<ApiExplorer />} />
-                        <Route path="/sdks" element={<SDKs />} />
-                        <Route path="/apps" element={<MyApps />} />
-                        <Route path="/apps/new" element={<CreateApp />} />
-                        <Route path="/apps/:id" element={<AppDetail />} />
-                        <Route path="/teams" element={<Teams />} />
-                        <Route path="/webhooks" element={<Webhooks />} />
-                        <Route path="/tokens" element={<AccessTokens />} />
-                        <Route path="/environments" element={<Environments />} />
-                        <Route path="/analytics" element={<Analytics />} />
-                        <Route path="/billing" element={<Billing />} />
-                        <Route path="/audit" element={<AuditLogs />} />
-                        <Route path="/status" element={<Status />} />
-                        <Route path="/sandbox" element={<Sandbox />} />
-                        <Route path="/notifications" element={<Notifications />} />
-                        <Route path="/support" element={<Support />} />
-                        <Route path="/faqs" element={<FAQs />} />
-                        <Route path="/changelog" element={<Changelog />} />
-                        <Route path="/community" element={<Community />} />
-                        <Route path="/security" element={<SecurityCenter />} />
-                        <Route path="/compliance" element={<Compliance />} />
-                        <Route path="/terms" element={<Terms />} />
-                        <Route path="/privacy" element={<Privacy />} />
-                        <Route path="/policies" element={<ApiPolicies />} />
-                        <Route path="/sla" element={<Sla />} />
-                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/" element={<Landing />} />
                         <Route
-                          path="/admin"
                           element={
-                            <RequireAdmin>
-                              <Admin />
-                            </RequireAdmin>
+                            <RequireAuth>
+                              <ShellChromeProvider>
+                                <AppShell />
+                              </ShellChromeProvider>
+                            </RequireAuth>
                           }
-                        />
-                        <Route
-                          path="/admin/org"
-                          element={
-                            <RequireAdmin>
-                              <Admin />
-                            </RequireAdmin>
-                          }
-                        />
-                      </Route>
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Suspense>
-                </AppsProvider>
-              </OnboardingProvider>
-            </EnvProvider>
+                        >
+                          <Route path="/onboarding" element={<Onboarding />} />
+                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/notifications" element={<Notifications />} />
+                          <Route path="/support" element={<Support />} />
+                          <Route path="/faqs" element={<FAQs />} />
+
+                          <Route path="/apis" element={<APIs />} />
+                          <Route path="/apis/:slug" element={<ProductDetail />} />
+                          <Route path="/products" element={<Products />} />
+                          <Route path="/products/:slug" element={<ProductDetail />} />
+                          <Route path="/docs" element={<Documentation />} />
+                          <Route path="/docs/:slug" element={<Documentation />} />
+                          <Route path="/sdks" element={<SDKs />} />
+
+                          <Route path="/status" element={<Status />} />
+                          <Route path="/changelog" element={<Changelog />} />
+                          <Route path="/security" element={<SecurityCenter />} />
+                          <Route path="/compliance" element={<Compliance />} />
+                          <Route path="/terms" element={<Terms />} />
+                          <Route path="/privacy" element={<Privacy />} />
+                          <Route path="/policies" element={<ApiPolicies />} />
+                          <Route path="/sla" element={<Sla />} />
+
+                          <Route path="/dashboard" element={gated(<Dashboard />)} />
+                          <Route path="/api-explorer" element={gated(<ApiExplorer />)} />
+                          <Route path="/sandbox" element={gated(<Sandbox />)} />
+                          <Route path="/apps" element={gated(<MyApps />)} />
+                          <Route path="/apps/new" element={gated(<CreateApp />)} />
+                          <Route path="/apps/:id" element={gated(<AppDetail />)} />
+                          <Route path="/teams" element={gated(<Teams />)} />
+                          <Route path="/webhooks" element={gated(<Webhooks />)} />
+                          <Route path="/tokens" element={gated(<AccessTokens />)} />
+                          <Route path="/environments" element={gated(<Environments />)} />
+                          <Route path="/analytics" element={gated(<Analytics />)} />
+                          <Route path="/billing" element={gated(<Billing />)} />
+                          <Route path="/audit" element={gated(<AuditLogs />)} />
+                          <Route path="/community" element={gated(<Community />)} />
+                          <Route
+                            path="/admin"
+                            element={
+                              <RequireAdmin>{gated(<Admin />)}</RequireAdmin>
+                            }
+                          />
+                          <Route
+                            path="/admin/org"
+                            element={
+                              <RequireAdmin>{gated(<Admin />)}</RequireAdmin>
+                            }
+                          />
+                        </Route>
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </AppsProvider>
+                </OnboardingProvider>
+              </EnvProvider>
             </AuthProvider>
           </ToastProvider>
         </BrowserRouter>

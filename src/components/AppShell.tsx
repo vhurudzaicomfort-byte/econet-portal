@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import CommandPalette from "./CommandPalette";
+import OnboardingBanner from "./OnboardingBanner";
 import { useShellChrome } from "./ShellChromeContext";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 
@@ -67,6 +68,7 @@ export default function AppShell() {
           showDemoToggle={chrome.showDemoToggle ?? onDashboard}
           onOpenCommandPalette={openPalette}
         />
+        <OnboardingBanner />
         <main
           className={clsx(
             "flex-1 px-4 sm:px-6 lg:px-10 py-6 sm:py-8 max-w-screen-2xl w-full mx-auto"
